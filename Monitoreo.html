@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo Agrícola</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Font Awesome para iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h2>Monitoreo de Parámetros Agrícolas</h2>
+        <nav>
+            <a href="index.html" class="volver-inicio">Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <section class="Monitoreo">
+        <h2>Estado de los Sensores</h2>
+        <table class="sensor-table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-tint"></i>Humedad del Suelo</th>
+                    <th><i class="fas fa-thermometer-half"></i>Temperatura del Suelo</th>
+                    <th><i class="fas fa-flask"></i>pH del Suelo</th>
+                    <th><i class="fas fa-sun"></i>Luminosidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><canvas id="chartHumedad"></canvas></td>
+                    <td><div id="apexTemperatura"></div></td>
+                    <td><canvas id="chartPH"></canvas></td>
+                    <td><div id="apexLuz"></div></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <div id="secciones-container">
+        <section class="Monitoreo">
+            <h2>Otros Parámetros</h2>
+            <table class="sensor-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-temperature-high"></i>Temperatura Ambiente</th>
+                        <th><i class="fas fa-cloud-sun-rain"></i>Humedad Relativa</th>
+                        <th><i class="fas fa-tint"></i>Nivel de Agua</th>
+                        <th><i class="fas fa-cloud"></i>CO2 en el Ambiente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><canvas id="chartTempAmbiente"></canvas></td>
+                        <td><div id="apexHumedadRelativa"></div></td>
+                        <td><canvas id="chartAgua"></canvas></td>
+                        <td><div id="apexCO2"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <button onclick="agregarSeccion()">Agregar nueva sección</button>
+
+    <script>
+        // Funciones para crear los gráficos
+        function getColor(value) {
+            return value < 30 ? 'red' : value < 60 ? 'yellow' : 'green';
+        }
+
+        function createChartJSGauge(id, value) {
+            new Chart(document.getElementById(id).getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [value, 100 - value],
+                        backgroundColor: [getColor(value), '#ddd'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    circumference: 180,
+                    rotation: 270,
+                    cutout: '75%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function createApexGauge(id, value) {
+            new ApexCharts(document.querySelector(`#${id}`), {
+                chart: { type: 'radialBar' },
+                series: [value],
+                labels: [''],
+                colors: [getColor(value)],
+                plotOptions: {
+                    radialBar: { hollow: { size: '60%' } }
+                }
+            }).render();
+        }
+
+        function agregarSeccion() {
+            const container = document.getElementById("secciones-container");
+            const idSuffix = Date.now();
+            const nuevaSeccion = document.createElement("section");
+            nuevaSeccion.className = "dashboard";
+            nuevaSeccion.innerHTML = `
+                <section class="Monitoreo">
+                    <h2>Otros Parámetros</h2>
+                    <table class="sensor-table">
+                        <thead>
+                            <tr>
+                                <th>Temperatura Ambiente</th>
+                                <th>Humedad Relativa</th>
+                                <th>Nivel de Agua</th>
+                                <th>CO2 en el Ambiente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><canvas id="chartTempAmbiente${idSuffix}"></canvas></td>
+                                <td><div id="apexHumedadRelativa${idSuffix}"></div></td>
+                                <td><canvas id="chartAgua${idSuffix}"></canvas></td>
+                                <td><div id="apexCO2${idSuffix}"></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            `;
+            container.appendChild(nuevaSeccion);
+            createChartJSGauge(`chartTempAmbiente${idSuffix}`, Math.floor(Math.random() * 100));
+            createApexGauge(`apexHumedadRelativa${idSuffix}`, Math.floor(Math.random() * 100));
+            createChartJSGauge(`chartAgua${idSuffix}`, Math.floor(Math.random() * 100));
+            createApexGauge(`apexCO2${idSuffix}`, Math.floor(Math.random() * 100));
+        }
+
+        // Crear los gráficos iniciales
+        createChartJSGauge('chartHumedad', Math.floor(Math.random() * 100));
+        createApexGauge('apexTemperatura', Math.floor(Math.random() * 40));
+        createChartJSGauge('chartPH', Math.floor(Math.random() * 14));
+        createApexGauge('apexLuz', Math.floor(Math.random() * 100));
+        createChartJSGauge('chartAgua', Math.floor(Math.random() * 100));
+        createApexGauge('apexCO2', Math.floor(Math.random() * 100));
+        createChartJSGauge('chartTempAmbiente', Math.floor(Math.random() * 40));
+        createApexGauge('apexHumedadRelativa', Math.floor(Math.random() * 100));
+    </script>
+</body>
+<footer>
+    <div class="footer-container">
+        <!-- Información de la Empresa -->
+        <div class="company-info">
+            <h3>CultivaInt</h3>
+            <p>Transformamos digitalmente tu negocio con soluciones innovadoras en tecnología y consultoría. Potenciamos el desarrollo de tu empresa a través de la digitalización.</p>
+            <p><strong>Dirección:</strong> Calle Ficticia 123, Ciudad, País</p>
+            <p><strong>Email:</strong> contacto@cultivaint.com</p>
+            <p><strong>Teléfono:</strong> +123 456 789</p>
+        </div>
+
+        <!-- Enlaces rápidos -->
+        <div class="quick-links">
+            <h4>Enlaces Rápidos</h4>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="Monitoreo.html">Monitoreo</a></li>
+                <li><a href="Planes.html">Planes</a></li>
+                <li><a href="Porque.html">¿Por qué elegirnos?</a></li>
+                <li><a href="Ayuda.html">Ayuda</a></li>
+                <li><a href="Contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+
+        <!-- Enlaces legales -->
+        <div class="legal-links">
+            <h4>Información Legal</h4>
+            <ul>
+                <li><a href="terminos.html">Términos y Condiciones</a></li>
+                <li><a href="privacidad.html">Política de Privacidad</a></li>
+                <li><a href="cookies.html">Política de Cookies</a></li>
+            </ul>
+        </div>
+
+        <!-- Redes Sociales -->
+        <div class="social-links">
+            <h4>Síguenos</h4>
+            <a href="#" title="Facebook" aria-label="Facebook">
+                <i class="fab fa-facebook"></i> Facebook
+            </a>
+            <a href="#" title="Twitter" aria-label="Twitter">
+                <i class="fab fa-twitter"></i> Twitter
+            </a>
+            <a href="#" title="LinkedIn" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+            <a href="#" title="Instagram" aria-label="Instagram">
+                <i class="fab fa-instagram"></i> Instagram
+            </a>
+        </div>
+
+        <!-- Copyright -->
+        <div class="footer-bottom">
+            <p class="copyright">© 2025 CultivaInt. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+</html>
