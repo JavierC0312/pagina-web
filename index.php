@@ -3,26 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
+    <title>Monitoreo Inteligente</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
-<body class="inicio-sesion">
-    <div class="form-container">
-        <h2>CultivaInt</h2>
-        <form action="login.php" method="post">
-            <label for="email">Correo Electrónico</label>
-            <input type="email" id="email" name="email" placeholder="Introduce tu correo" required>
+<body>
+    <header>
+        <a href="index.php#"><h2>CultivaInt</h2></a>
+        <nav>
+            <a href="index.php?content=porque">¿Por qué contratarlo?</a>
+            <a href="index.php?content=planes">Planes</a>
+            <a href="index.php?content=ayuda">Ayuda</a>
+            <a href="Inicio-sesion.html">Iniciar sesión</a>
+            <a href="Registro.html">
+                <button class="cta-button">Registrarse</button>
+            </a>
+            <?php
+                if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
+                    echo '<a href="index.php?content=monitoreo">Monitoreo</a>';
+                    echo '<a href="logout.php">Cerrar sesión</a>'; // Nuevo enlace
+                } else {
+                    echo '<a href="Inicio-sesion.html">Iniciar sesión</a>';
+                    echo '<a href="Registro.html"><button class="cta-button">Registrarse</button></a>';
+                }
+            ?>
+        </nav>
+    </header>
 
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" placeholder="Introduce tu contraseña" required>
+    <?php
+        $content = 'index'; // Contenido por defecto
 
-            <button type="submit">Iniciar Sesión</button>
+        if (isset($_GET['content'])) {
+            $content = $_GET['content'];
+        }
 
-            <p><a href="#">¿Olvidaste tu contraseña?</a></p>
-            <p><a href="Registro.html">¿No tienes cuenta? Registrate</a></p>
-        </form>
-    </div>
-</body>
+        if ($content == 'monitoreo') {
+            include 'Monitoreo.php';
+        } elseif ($content == 'porque') {
+            include 'Porque.php';
+        } elseif ($content == 'planes') {
+            include 'Planes.php';
+        } elseif ($content == 'ayuda') {
+            include 'Ayuda.php';
+        } else {
+            // Contenido por defecto (sección hero)
+            echo '
+                <section class="hero">
+                    <h1>Todo tu sistema en <span class="highlight">una sola plataforma</span></h1>
+                    <p>¡Seguro, eficiente y con la mejor tecnología!</p>
+                    <button class="cta-button">Empieza ahora</button>
+                </section>';
+        }
+    ?>
 <footer>
     <div class="footer-container">
         <div class="company-info">
@@ -75,5 +109,6 @@
         </div>
     </div>
 </footer>
+
 </body>
 </html>
